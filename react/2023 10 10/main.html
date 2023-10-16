@@ -18,194 +18,538 @@
   <body>
     <div class="root"></div>
     <script type="text/babel">
-      const { useState } = React;
+      const { useState, useEffect } = React;
+      //  To Shuffle the Question
+      function shuffleArray(myArray) {
+        let newArray = [...myArray];
+        for (let i = newArray.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+        }
+        return newArray;
+      }
+      // To Suffle the Options
+      function shuffleQuestionsAndOptions(questions) {
+        const shuffledQuestions = shuffleArray([...questions]);
+
+        for (let i = 0; i < shuffledQuestions.length; i++) {
+          shuffledQuestions[i].options = shuffleArray([
+            ...shuffledQuestions[i].options,
+          ]);
+        }
+
+        return shuffledQuestions;
+      }
+      const questions = [
+        {
+          sno: "1",
+          ques: "Which of these is not a data type in JavaScript?",
+          section: ["Data Types"],
+          options: ["String", "Floating Point Number", "Array", "Boolean"],
+          ans: "Floating Point Number",
+          qtype: "scq",
+        },
+        {
+          sno: "2",
+          ques: `What will be the output of the following code?
+let x = 5
+let y = 10
+console.log(x++)
+console.log(x + y)`,
+          section: ["Operators", "Code Evaluation"],
+          options: ["5 and 15", "6 and 15", "5 and 16", "6 and 16"],
+          ans: "5 and 16",
+          qtype: "scq",
+        },
+        {
+          sno: "3",
+          ques: "Which of these expressions return true?",
+          section: ["Data Types"],
+          options: [
+            "5 == 5.0",
+            'new String("John") == "John"',
+            'new String("John") == new String("John")',
+            'parseInt("5") === parseFloat("5.0")',
+          ],
+          ans: [
+            "5 == 5.0",
+            'new String("John") == "John"',
+            'parseInt("5") === parseFloat("5.0")',
+          ],
+          qtype: "mcq",
+        },
+
+        {
+          sno: "4",
+          ques: `Select the data types that are used in the following code:
+let length = 16;          
+let lastName = "Johnson";  
+const x = {
+  firstName: "John",
+  lastName: "Doe"
+};`,
+          section: ["Data Types", "Code Evaluation"],
+          options: ["Boolean", "Array", "String", "Number", "Object"],
+          ans: ["String", "Number", "Object"],
+          qtype: "mcq",
+        },
+
+        {
+          sno: "5",
+          ques: "Which of these is not a direct use case of length property of an array?",
+          section: ["Array"],
+          options: [
+            "To get the number of elements in the array.",
+            "To get the last element of the array.",
+            "To execute a function for each element of an array.",
+          ],
+          ans: "To execute a function for each element of an array.",
+          qtype: "scq",
+        },
+
+        {
+          sno: "6",
+          ques: "Select the intents that we can achieve using a string method in JavaScript",
+          section: ["String"],
+          options: [
+            "Hello + World -> HelloWorld",
+            "'12345' -> '0000012345'",
+            "HelloWorld -> HELLOWORLD",
+            "HelloWorld -> [Hell, W, rld]",
+            "Hello -> HelloHelloHello",
+            "HelloWorld -> dlroWolleH",
+          ],
+          ans: [
+            "Hello + World -> HelloWorld",
+            "'12345' -> '0000012345'",
+            "HelloWorld -> HELLOWORLD",
+            "HelloWorld -> [Hell, W, rld]",
+            "Hello -> HelloHelloHello",
+          ],
+          qtype: "mcq",
+        },
+
+        {
+          sno: "7",
+          ques: `What is the correct JavaScript syntax to change the content of the HTML element below?
+&lt;p id="demo">This is a demonstration.&lt;/p>`,
+          section: ["DOM Manipulation"],
+          options: [
+            '#demo.innerHTML = "Hello World!";',
+            'document.getElementByName("p").innerHTML = "Hello World!";',
+            'document.getElementById("demo").innerHTML = "Hello World!";',
+            'document.getElement("p").innerHTML = "Hello World!";',
+          ],
+          ans: 'document.getElementById("demo").innerHTML = "Hello World!";',
+          qtype: "scq",
+        },
+
+        {
+          sno: "8",
+          ques: "Where is the correct place to insert a JavaScript?",
+          section: ["DOM Manipulation"],
+          options: [
+            "The &lt;head> section",
+            "Both the &lt;head> section and the &lt;body> section are correct",
+            "The &lt;body> section",
+          ],
+          ans: "Both the &lt;head> section and the &lt;body> section are correct",
+          qtype: "scq",
+        },
+
+        {
+          sno: "9",
+          ques: "What is the correct syntax for referring to an external script called 'xxx.js'?",
+          section: ["DOM Manipulation"],
+          options: [
+            '&lt;script src="xxx.js">',
+            '&lt;script href="xxx.js">',
+            '&lt;script name="xxx.js">',
+          ],
+          ans: '&lt;script src="xxx.js">',
+          qtype: "scq",
+        },
+
+        {
+          sno: "10",
+          ques: "The external JavaScript file must contain the &lt;script> tag.",
+          section: ["DOM Manipulation"],
+          options: ["True", "False"],
+          ans: "False",
+          qtype: "scq",
+        },
+
+        {
+          sno: "11",
+          ques: "How to write an IF statement for executing some code if 'i' is NOT equal to 5?",
+          section: ["Conditional Expression"],
+          options: [
+            "if i =! 5 then",
+            "if (i != 5)",
+            "if (i &lt;> 5)",
+            "if i &lt;> 5",
+          ],
+          ans: "if (i != 5)",
+          qtype: "scq",
+        },
+
+        {
+          sno: "12",
+          ques: "How does a WHILE loop start?",
+          section: ["Loops"],
+          options: [
+            "while (i &lt;= 10)",
+            "while i = 1 to 10",
+            "while (i &lt;= 10; i++)",
+          ],
+          ans: "while (i &lt;= 10)",
+          qtype: "scq",
+        },
+
+        {
+          sno: "13",
+          ques: "How does a FOR loop start?",
+          section: ["Loops"],
+          options: [
+            "for i = 1 to 5",
+            "for (i = 0; i &lt;= 5)",
+            "for (i = 0; i &lt;= 5; i++)",
+            "for (i &lt;= 5; i++)",
+          ],
+          ans: "for (i = 0; i &lt;= 5; i++)",
+          qtype: "scq",
+        },
+
+        {
+          sno: "14",
+          ques: "How can you add a comment in a JavaScript?",
+          section: ["Syntax"],
+          options: [
+            "//This is a comment",
+            "&lt;!--This is a comment-->",
+            "'This is a comment",
+          ],
+          ans: "//This is a comment",
+          qtype: "scq",
+        },
+
+        {
+          sno: "15",
+          ques: "How to insert a comment that has more than one line?",
+          section: ["Syntax"],
+          options: [
+            `//This comment has more than one line//`,
+            `&lt;!--This comment has more than one line-->`,
+            `/*This comment has more than one line*/`,
+          ],
+          ans: "/*This comment has more than one line*/",
+          qtype: "scq",
+        },
+
+        {
+          sno: "16",
+          ques: "How do you round the number 7.25, to the nearest integer?",
+          section: ["Math"],
+          options: [
+            `Math.round(7.25)`,
+            `round(7.25)`,
+            "rnd(7.25)",
+            "Math.rnd(7.25)",
+          ],
+          ans: `Math.round(7.25)`,
+          qtype: "scq",
+        },
+
+        {
+          sno: "17",
+          ques: "Which all of these you can achieve using the Math module?",
+          section: ["Math"],
+          options: [
+            "Absolute value",
+            "Trigonometric functions",
+            "Exponentiation",
+            "Logarithms",
+            "Min, max value",
+            "Cube root",
+            "Factorial",
+          ],
+          ans: [
+            "Absolute value",
+            "Trigonometric functions",
+            "Exponentiation",
+            "Logarithms",
+            "Min, max value",
+            "Cube root",
+          ],
+          qtype: "mcq",
+        },
+
+        {
+          sno: "18",
+          ques: "How can you detect the client's browser name?",
+          section: ["Browser Detection"],
+          options: ["client.navName", "browser.name", "navigator.appName"],
+          ans: "navigator.appName",
+          qtype: "scq",
+        },
+        {
+          sno: "19",
+          ques: "Which event occurs when the user clicks on an HTML element?",
+          section: ["Event Handling"],
+          options: ["onmouseover", "onclick", "onmouseclick", "onchange"],
+          ans: "onclick",
+          qtype: "scq",
+        },
+
+        {
+          sno: "20",
+          ques: "Which of these is not a way to declare a JavaScript variable?",
+          section: ["Syntax"],
+          options: [
+            "let carName = 'Volvo'",
+            "var carName = 'Volvo'",
+            "const carName = 'Volvo'",
+            "def carName = 'Volvo'",
+          ],
+          ans: "def carName = 'Volvo'",
+          qtype: "scq",
+        },
+      ];
+      // Store the suffled Questionsn with suffled options
+      const shuffledQuestions = shuffleQuestionsAndOptions(questions);
 
       const Main = () => {
-        const questions = [
-          {
-            sno: "1",
-            ques: "Which of these is not a data type in JavaScript?",
-            section: ["Data Types"],
-            options: ["String", "Floating Point Number", "Array", "Boolean"],
-            ans: "Floating Point Number",
-            qtype: "scq",
-          },
-          {
-            sno: "2",
-            ques: `What will be the output of the following code?
-          let x = 5
-          let y = 10
-          console.log(x++)
-          console.log(x + y)`,
-            section: ["Operators", "Code Evaluation"],
-            options: ["5 and 15", "6 and 15", "5 and 16", "6 and 16"],
-            ans: "5 and 16",
-            qtype: "scq",
-          },
-          {
-            sno: "3",
-            ques: "Which of these expressions return true?",
-            section: ["Data Types"],
-            options: [
-              "5 == 5.0",
-              'new String("John") == "John"',
-              'new String("John") == new String("John")',
-              'parseInt("5") === parseFloat("5.0")',
-            ],
-            ans: [
-              "5 == 5.0",
-              'new String("John") == "John"',
-              'parseInt("5") === parseFloat("5.0")',
-            ],
-            qtype: "mcq",
-          },
-
-          {
-            sno: "4",
-            ques: `Select the data types that are used in the following code:
-                      let length = 16;
-                      let lastName = "Johnson";
-                      const x = {
-                      firstName: "John",
-                      lastName: "Doe"
-                      };`,
-            section: ["Data Types", "Code Evaluation"],
-            options: ["Boolean", "Array", "String", "Number", "Object"],
-            ans: ["String", "Number", "Object"],
-            qtype: "mcq",
-          },
-          {
-            sno: "5",
-            ques: "Which of these is not a direct use case of length property of an array?",
-            section: ["Array"],
-            options: [
-              "To get the number of elements in the array.",
-              "To get the last element of the array.",
-              "To execute a function for each element of an array.",
-            ],
-            ans: "To execute a function for each element of an array.",
-            qtype: "scq",
-          },
-        ];
-
         //  console.log(questions);
-        const [currentQues, setCurrentQues] = useState(1);
+        const [currentQues, setCurrentQues] = useState(0);
         const [showScore, SetShowScore] = useState(false);
-        const [finalScore, setFinalScore] = useState(0);
+
         const [answersCheckBox, setAnswersCheckBox] = useState([]);
         const [answersRadio, setAnswersRadio] = useState("");
 
-        /// handle the options
+        console.log(shuffledQuestions);
+        // Create an array to store user's answers
+        const [userAnswers, setUserAnswers] = useState(
+          Array(questions.length).fill({
+            Userans: shuffledQuestions[currentQues].qtype === "scq" ? "" : [],
+          })
+        );
+
+        // Create an array to store all question-answer pairs
+
+        // Function to handle storing the user's answer
+
+        const saveUserAnswer = () => {
+          const updatedUserAnswers = [...userAnswers]; // Create a copy of the userAnswers array
+          updatedUserAnswers[currentQues] = {
+            ...shuffledQuestions[currentQues],
+            Userans:
+              shuffledQuestions[currentQues].qtype === "scq"
+                ? answersRadio
+                : answersCheckBox,
+          };
+          setUserAnswers(updatedUserAnswers);
+        };
+
+        /// Get the value of the options selected by the user
         const handleChange = (e) => {
-          const quary = e.target.value;
           if (e.target.type === "checkbox") {
-            console.log("i am in checked");
+            const updatedCheckboxes = Array.isArray(answersCheckBox)
+              ? [...answersCheckBox]
+              : [];
+
             if (e.target.checked) {
-              console.log(e);
-              setAnswersCheckBox([...answersCheckBox, e.target.value]);
+              updatedCheckboxes.push(e.target.value);
             } else {
-              let updatedList = [...answersCheckBox];
-              updatedList = updatedList.filter((item) => {
-                return item !== quary;
-              });
-              setAnswersCheckBox(updatedList);
+              const index = updatedCheckboxes.indexOf(e.target.value);
+              if (index !== -1) {
+                updatedCheckboxes.splice(index, 1);
+              }
             }
+
+            setAnswersCheckBox(updatedCheckboxes);
           }
+
           if (e.target.type === "radio") {
             setAnswersRadio(e.target.value);
           }
         };
         // End of the handleChange
-        console.log(answersRadio);
-        console.log(answersCheckBox);
+        // console.log(answersRadio);
+        // console.log(answersCheckBox);
 
-        // for the next btn
+        // Function For the next button
         const handleClickNext = () => {
-          if (currentQues === questions.length - 1) {
+          if (currentQues === shuffledQuestions.length - 1) {
             SetShowScore(true);
+            saveUserAnswer();
           } else {
-            if (questions[currentQues].qtype === "mcq") {
-              handleResult(answersCheckBox);
+            console.log(userAnswers[currentQues + 1], currentQues);
+            const nextQues = userAnswers[currentQues + 1]; // check if the quetion is already answered or not if it is then select that option according to the question
+            if (nextQues.qtype === "scq") {
+              setAnswersRadio(nextQues.Userans || "");
               setAnswersCheckBox([]);
-            } else {
-              handleResult(answersRadio);
+            } else if (nextQues.qtype === "mcq") {
               setAnswersRadio("");
+              setAnswersCheckBox(nextQues.Userans || []);
             }
+
+            // Save the user's answer before moving to the next question
+            saveUserAnswer();
+
             setCurrentQues(currentQues + 1);
           }
         };
-        // for the prev btn
+        // Function For the previous button
         const handleClickPrev = () => {
           if (currentQues > -1) {
+            // Save the user's answer before moving to the previous question
+            saveUserAnswer();
+
+            // Update state variables with the previous answer
+            const prevQues = userAnswers[currentQues - 1]; // check if the quetion is already answered or not if it is then select that option according to the question
+
+            if (prevQues.qtype === "scq") {
+              setAnswersRadio(prevQues.Userans || "");
+              setAnswersCheckBox([]);
+            } else if (prevQues.qtype === "mcq") {
+              setAnswersRadio("");
+              setAnswersCheckBox(prevQues.Userans || []);
+            }
+
             setCurrentQues(currentQues - 1);
           }
         };
 
-        // check ans and update score
-        const handleResult = (answer) => {
-          console.log(questions[currentQues].qtype);
-          const queType = questions[currentQues].qtype;
-          if (queType === "scq") {
-            if (questions[currentQues].ans === answer) {
-              console.log("right");
-              setFinalScore(finalScore + 1);
-            } else {
-              console.log("wrong");
-            }
-          }
-          if (queType == "mcq") {
-            if (
-              JSON.stringify(answer.sort()) ===
-              JSON.stringify(questions[currentQues].ans.sort())
-            ) {
-              console.log("sahi h ");
-              setFinalScore(finalScore + 1);
-              console.log(JSON.stringify(answer.sort()));
-            } else {
-              console.log("galat h");
-              console.log(JSON.stringify(answer.sort()));
-            }
-          }
-        };
+        /////////////
+
         // handle submit btn
-        const handleSubmit = () => {};
+        const handleSubmit = () => {
+          saveUserAnswer();
+          SetShowScore(!showScore);
+        };
 
         //return statement
-        return showScore || currentQues < 0 ? (
-          <div>{finalScore}</div>
+        return currentQues < 0 || showScore ? (
+          <Results userAnswers={userAnswers} />
         ) : (
+          <Question
+            question={shuffledQuestions[currentQues]}
+            currentQues={currentQues}
+            answersRadio={answersRadio}
+            answersCheckBox={answersCheckBox}
+            handleChange={handleChange}
+            handleClickNext={handleClickNext}
+            handleClickPrev={handleClickPrev}
+            saveUserAnswer={saveUserAnswer}
+            handleSubmit={handleSubmit}
+          />
+        );
+      };
+
+      // Question Component to render every question one by one
+      const Question = ({
+        question,
+        currentQues,
+        answersRadio,
+        answersCheckBox,
+        handleChange,
+        handleClickNext,
+        handleClickPrev,
+        saveUserAnswer,
+        handleSubmit,
+      }) => {
+        const isSingleChoice = question.qtype === "scq";
+        const isMultipleChoice = question.qtype === "mcq";
+
+        return (
           <div>
             <div className="App-header">
-              <div className="">{questions[currentQues].ques}</div>
-              <div>{currentQues}</div>
+              <div>{question.ques}</div>
+              <div>{currentQues + 1}</div>
               <div className="option">
-                {questions[currentQues].options.map((option) => {
-                  // console.log(option);
-                  return (
-                    <div>
-                      <input
-                        onChange={(e) => {
-                          handleChange(e);
-                        }}
-                        name="action"
-                        type={
-                          questions[currentQues].qtype === "scq"
-                            ? "radio"
-                            : "checkbox"
-                        }
-                        value={option}
-                        id={option}
-                        /// for exp
-                      />
-                      <label htmlFor={option}>{option}</label>
-                      <br></br>
-                    </div>
-                  );
-                })}
+                {question.options.map((option, index) => (
+                  <div key={index}>
+                    <input
+                      onChange={(e) => {
+                        handleChange(e);
+                      }}
+                      name="action"
+                      type={isSingleChoice ? "radio" : "checkbox"}
+                      value={option}
+                      checked={
+                        isSingleChoice
+                          ? answersRadio === option
+                          : answersCheckBox.includes(option)
+                      }
+                    />
+                    <label htmlFor={option}>{option}</label>
+                    <br />
+                  </div>
+                ))}
               </div>
               <input type="button" value="next" onClick={handleClickNext} />
-              <input type="button" value="prev" onClick={handleClickPrev} />
+              {currentQues > 0 && (
+                <input type="button" value="prev" onClick={handleClickPrev} /> // only show the prev btn when user reach question more then one
+              )}
               <input type="button" value="Submit" onClick={handleSubmit} />
+            </div>
+          </div>
+        );
+      };
+
+      // Result component to show the ressult when user reach the last question or click on the submit btn
+      const Results = ({ userAnswers }) => {
+        let score = 0;
+
+        return (
+          <div>
+            <h2>Results</h2>
+            {userAnswers.map((item, index) => {
+              const isSingleChoice = item.qtype === "scq";
+              const isMultipleChoice = item.qtype === "mcq";
+
+              // Initialize user answer as a string
+              let userAnswerString = "";
+
+              if (isSingleChoice) {
+                userAnswerString = item.Userans;
+              } else if (isMultipleChoice) {
+                if (Array.isArray(item.Userans)) {
+                  userAnswerString = item.Userans.join(", "); // add user ans into a string
+                }
+              }
+
+              // Calculate the score based on the question type
+              if (isSingleChoice && item.Userans === item.ans) {
+                score += 1;
+              } else if (isMultipleChoice) {
+                const userAnswerSet = new Set(item.Userans);
+                const correctAnswerSet = new Set(item.ans);
+
+                // Check if the user's answer set matches the correct answer set
+                if (
+                  userAnswerSet.size === correctAnswerSet.size &&
+                  [...userAnswerSet].every((value) =>
+                    correctAnswerSet.has(value)
+                  )
+                ) {
+                  score += 1;
+                }
+              }
+
+              return (
+                <div key={index}>
+                  <div>{item.ques}</div>
+                  <div>Correct Answer: {item.ans}</div>
+                  <div>Your Answer: {userAnswerString}</div>
+                </div>
+              );
+            })}
+
+            <div>
+              <h3>
+                Score: {score} out of {userAnswers.length}
+              </h3>
             </div>
           </div>
         );
